@@ -2,10 +2,11 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_AUDIENCE } from '../constants'; // Import constants
 
 const initialState = {
   accessToken: null,
-  email: null, // Add email to state
+  email: null,
   status: 'idle',
   error: null,
 };
@@ -15,14 +16,14 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        'https://dev-ztbgjd8qex1n4eqp.us.auth0.com/oauth/token',
+        `${AUTH0_DOMAIN}/oauth/token`,
         {
           grant_type: 'password',
           username: credentials.email,
           password: credentials.password,
-          audience: 'https://dev-ztbgjd8qex1n4eqp.us.auth0.com/api/v2/',
-          client_id: 'b8oa8G7Fs76llmtmgHXoPWcXpvmi7eZ7',
-          client_secret: 'cUHRGh8ROs-WYNsqE22VMG64WA7GrDU2J9QcGVPsWEYv3imTCtUZ7EuQlQcXHG4-',
+          audience: AUTH0_AUDIENCE,
+          client_id: AUTH0_CLIENT_ID,
+          client_secret: AUTH0_CLIENT_SECRET,
         }
       );
       // Extract email from response or make another request to get user info
@@ -46,7 +47,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.accessToken = action.payload.accessToken;
-        state.email = action.payload.email; // Save email
+        state.email = action.payload.email;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';

@@ -23,9 +23,7 @@ const Welcome = () => {
       {email ? (
         <div>
           <p>Logged in as: {email}</p>
-          <button onClick={() => logout({ returnTo: window.location.origin })}>
-            Log out
-          </button>
+         
         </div>
       ) : (
         <p>Loading user information...</p>
