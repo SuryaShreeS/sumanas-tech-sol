@@ -3,14 +3,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Define an initial state
 const initialState = {
   accessToken: null,
+  email: null, // Add email to state
   status: 'idle',
   error: null,
 };
 
-// Define the async thunk for login
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (credentials, { rejectWithValue }) => {
@@ -26,14 +25,15 @@ export const loginUser = createAsyncThunk(
           client_secret: 'cUHRGh8ROs-WYNsqE22VMG64WA7GrDU2J9QcGVPsWEYv3imTCtUZ7EuQlQcXHG4-',
         }
       );
-      return response.data.access_token;
+      // Extract email from response or make another request to get user info
+      const email = credentials.email; // This is a placeholder, adjust based on actual implementation
+      return { accessToken: response.data.access_token, email };
     } catch (error) {
       return rejectWithValue('Invalid email or password');
     }
   }
 );
 
-// Create the slice
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -45,7 +45,8 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.accessToken = action.payload;
+        state.accessToken = action.payload.accessToken;
+        state.email = action.payload.email; // Save email
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';
